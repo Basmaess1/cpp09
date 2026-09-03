@@ -20,15 +20,15 @@ int main(int ac, char **av)
     }
 
     std::cout<< "Before: ";
-    // pm.printVec();
-    // std::cout<< "Before: ";
-    // pm.printDeq();
-
-    // pm.makePairsVector();
     pm.printVec();
 
     pm.sortVector();
 
     pm.printAfterVector();
+    
+    pm.sortDeque();
+
+    std::cout << "Deque after: ";
+    pm.printDeq();
 
 }

@@ -15,7 +15,6 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& other)
         vec = other.vec;
         deq = other.deq;
     }
-
     return *this;
 }
 
@@ -81,25 +80,18 @@ void PmergeMe::fordJohnsonVector(std::vector<int> &numbers)
 {
     if (numbers.size() <= 1)
         return;
-
     bool hasStraggler = (numbers.size() % 2 != 0);
     int straggler = 0;
 
     if (hasStraggler)
         straggler = numbers[numbers.size() - 1];
 
-    // -----------------------------------
-    // 1. Make pairs
-    // -----------------------------------
-
     std::vector<Pair> pairs;
-
     std::size_t i = 0;
 
     while (i + 1 < numbers.size())
     {
         Pair p;
-
         if (numbers[i] < numbers[i + 1])
         {
             p.small = numbers[i];
@@ -110,31 +102,14 @@ void PmergeMe::fordJohnsonVector(std::vector<int> &numbers)
             p.small = numbers[i + 1];
             p.large = numbers[i];
         }
-
         pairs.push_back(p);
         i += 2;
     }
-
-    // -----------------------------------
-    // 2. Extract large elements
-    // -----------------------------------
-
     std::vector<int> largeElements;
 
     for (i = 0; i < pairs.size(); ++i)
         largeElements.push_back(pairs[i].large);
-
-    // -----------------------------------
-    // 3. Recursively sort large elements
-    // -----------------------------------
-
     fordJohnsonVector(largeElements);
-
-    // -----------------------------------
-    // 4. Reorder pairs according
-    //    to sorted large elements
-    // -----------------------------------
-
     std::vector<Pair> sortedPairs;
 
     for (i = 0; i < largeElements.size(); ++i)
@@ -148,59 +123,35 @@ void PmergeMe::fordJohnsonVector(std::vector<int> &numbers)
             }
         }
     }
-
-    // -----------------------------------
-    // 5. Build main chain
-    // -----------------------------------
-
     std::vector<int> mainChain;
-
     for (i = 0; i < largeElements.size(); ++i)
         mainChain.push_back(largeElements[i]);
-
-    // -----------------------------------
-    // 6. Insert b1
-    // -----------------------------------
-
+    //  Insert b1
     if (!sortedPairs.empty())
         mainChain.insert(
             mainChain.begin(),
             sortedPairs[0].small
         );
-
-    // -----------------------------------
-    // 7. Insert remaining b's
-    //    using Jacobsthal order
-    // -----------------------------------
-
+    // Insert remaining b's using Jacobsthal order
     std::size_t pendingCount = 0;
-
     if (sortedPairs.size() > 1)
         pendingCount = sortedPairs.size() - 1;
-
     std::vector<std::size_t> order =
         makeJacobsthalOrder(pendingCount);
-
     for (i = 0; i < order.size(); ++i)
     {
         std::size_t index = order[i];
-
         binaryInsertVector(
             mainChain,
             sortedPairs[index - 1].small,
             sortedPairs[index - 1].large
         );
     }
-
-    // -----------------------------------
-    // 8. Insert straggler
-    // -----------------------------------
-
+    // Insert straggler
     if (hasStraggler)
     {
         std::vector<int>::iterator begin = mainChain.begin();
         std::vector<int>::iterator end = mainChain.end();
-
         while (begin < end)
         {
             std::vector<int>::iterator middle =
@@ -211,14 +162,11 @@ void PmergeMe::fordJohnsonVector(std::vector<int> &numbers)
             else
                 end = middle;
         }
-
         mainChain.insert(begin, straggler);
     }
-
     numbers = mainChain;
 }
-std::vector<std::size_t> PmergeMe::makeJacobsthalOrder(
-    std::size_t pendingCount) const
+std::vector<std::size_t> PmergeMe::makeJacobsthalOrder(std::size_t pendingCount) const
 {
     std::vector<std::size_t> order;
 
@@ -238,21 +186,14 @@ std::vector<std::size_t> PmergeMe::makeJacobsthalOrder(
             order.push_back(i);
 
         start = current + 1;
-
         std::size_t next = current + 2 * previous;
         previous = current;
         current = next;
     }
-
     return order;
 }
 
-
-
-void PmergeMe::binaryInsertVector(
-    std::vector<int> &mainChain,
-    int value,
-    int limit)
+void PmergeMe::binaryInsertVector(std::vector<int> &mainChain, int value, int limit)
 {
     std::vector<int>::iterator begin = mainChain.begin();
     std::vector<int>::iterator end = mainChain.begin();
@@ -260,7 +201,6 @@ void PmergeMe::binaryInsertVector(
     // Search only before the partner.
     while (end != mainChain.end() && *end != limit)
         ++end;
-
     // Binary search.
     while (begin < end)
     {
@@ -272,7 +212,6 @@ void PmergeMe::binaryInsertVector(
         else
             end = middle;
     }
-
     mainChain.insert(begin, value);
 }
 
@@ -294,6 +233,136 @@ void PmergeMe::printAfterVector() const
     std::cout << std::endl;
 }
 
+// deque
+
+void PmergeMe::fordJohnsonDeque(std::deque<int> &numbers)
+{
+    if (numbers.size() <= 1)
+        return;
+
+    bool hasStraggler = (numbers.size() % 2 != 0);
+    int straggler = 0;
+
+    if (hasStraggler)
+        straggler = numbers[numbers.size() - 1];
+
+    std::deque<Pair> pairs;
+
+    std::size_t i = 0;
+
+    while (i + 1 < numbers.size())
+    {
+        Pair p;
+
+        if (numbers[i] < numbers[i + 1])
+        {
+            p.small = numbers[i];
+            p.large = numbers[i + 1];
+        }
+        else
+        {
+            p.small = numbers[i + 1];
+            p.large = numbers[i];
+        }
+
+        pairs.push_back(p);
+        i += 2;
+    }
+    std::deque<int> largeElements;
+
+    for (i = 0; i < pairs.size(); ++i)
+        largeElements.push_back(pairs[i].large);
+    fordJohnsonDeque(largeElements);
+    std::deque<Pair> sortedPairs;
+
+    for (i = 0; i < largeElements.size(); ++i)
+    {
+        for (std::size_t j = 0; j < pairs.size(); ++j)
+        {
+            if (pairs[j].large == largeElements[i])
+            {
+                sortedPairs.push_back(pairs[j]);
+                break;
+            }
+        }
+    }
+    std::deque<int> mainChain;
+
+    for (i = 0; i < largeElements.size(); ++i)
+        mainChain.push_back(largeElements[i]);
+    if (!sortedPairs.empty())
+        mainChain.insert(
+            mainChain.begin(),
+            sortedPairs[0].small
+        );
+    std::size_t pendingCount = 0;
+
+    if (sortedPairs.size() > 1)
+        pendingCount = sortedPairs.size() - 1;
+
+    std::vector<std::size_t> order =
+        makeJacobsthalOrder(pendingCount);
+
+    for (i = 0; i < order.size(); ++i)
+    {
+        std::size_t index = order[i];
+
+        binaryInsertDeque(
+            mainChain,
+            sortedPairs[index - 1].small,
+            sortedPairs[index - 1].large
+        );
+    }
+    if (hasStraggler)
+    {
+        std::deque<int>::iterator begin = mainChain.begin();
+        std::deque<int>::iterator end = mainChain.end();
+
+        while (begin < end)
+        {
+            std::deque<int>::iterator middle =
+                begin + (end - begin) / 2;
+
+            if (*middle < straggler)
+                begin = middle + 1;
+            else
+                end = middle;
+        }
+        mainChain.insert(begin, straggler);
+    }
+    numbers = mainChain;
+}
+
+void PmergeMe::binaryInsertDeque(
+    std::deque<int> &mainChain,
+    int value,
+    int limit)
+{
+    std::deque<int>::iterator begin = mainChain.begin();
+    std::deque<int>::iterator end = mainChain.begin();
+
+    // Search only before the partner.
+    while (end != mainChain.end() && *end != limit)
+        ++end;
+
+    // Binary search.
+    while (begin < end)
+    {
+        std::deque<int>::iterator middle =
+            begin + (end - begin) / 2;
+
+        if (*middle < value)
+            begin = middle + 1;
+        else
+            end = middle;
+    }
+
+    mainChain.insert(begin, value);
+}
+void PmergeMe::sortDeque()
+{
+    fordJohnsonDeque(deq);
+}
 // std::vector<std::size_t> PmergeMe::makeJacobsthalOrder(
 //     std::size_t count) const
 // {
