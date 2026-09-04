@@ -5,6 +5,17 @@ BitcoinExchange::BitcoinExchange()
 
 }
 
+BitcoinExchange::BitcoinExchange(const BitcoinExchange& other)
+{
+    *this = other;
+}
+BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other)
+{
+    if(this != &other)
+        *this = other;
+    return *this;
+}
+
 BitcoinExchange::~BitcoinExchange()
 {
 
@@ -33,7 +44,6 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
 
         ss >> rate;
         databases[date] = rate;
-        // std::cout << date << " -> " << rate << std::endl;
     }
     file.close();
 
@@ -101,9 +111,6 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
         double result = value * it->second;
         std::cout << date << " => " << value
                 << " = " << result << std::endl;
-        // std::cout << "date = ["<< date <<"]"
-        //           << ", value = ["<< vl <<"]"
-        //           << std::endl;
     }
     file.close();
 
@@ -137,75 +144,3 @@ bool BitcoinExchange::isValidDate(const std::string& date)
         return false;
     return true;
 }
-
-
-//  void BitcoinExchange::processInput(const std::string& filename)
-//  {
-//     std::string line;
-//     std::ifstream file(filename.c_str());
-
-//     if(!file.is_open())
-//     {
-//         throw std::runtime_error("could not open the input file");
-//     }
-
-//     std::getline(file, line);
-//     while(std::getline(file, line))
-//     {
-//         std::size_t pos = line.find('|');
-//         if(pos == std::string::npos)
-//         {
-//             std::cerr <<"Error: bad input => "<<line << std::endl;
-//             continue ;
-//         }
-//         std::string date = line.substr(0, pos-1);
-//         std::string vl = line.substr(pos + 2);
-//         if (!isValidDate(date))
-//         {
-//             std::cerr << "Error: bad input => " << date << std::endl;
-//             continue;
-//         }
-
-//         std::stringstream ss(vl);
-
-//         double value;
-//         ss >> value;
-//         if (ss.fail())
-//         {
-//             std::cerr << "Error: bad input => " << line << std::endl;
-//             continue;
-//         }
-//         if(value < 0)
-//         {
-//             std::cerr << "Error: not a positive number " << std::endl;
-//             continue;
-//         }
-//         if(value > 1000)
-//         {
-//             std::cerr << "Error: too large number" << std::endl;
-//             continue;
-//         }
-//         std::map<std::string, double>::iterator it = databases.lower_bound(date);
-//         // if (it == databases.end())
-//         // {
-//         //     --it;
-//         // }
-//         // if (it->first != date)
-//         // {
-//             if (it == databases.begin())
-//             {
-//                 std::cerr << "Error: date is too early." << std::endl;
-//                 continue;
-//             }
-//             --it;
-//         // }
-//         double result = value * it->second;
-//         std::cout << date << " => " << value
-//                 << " = " << result << std::endl;
-//         // std::cout << "date = ["<< date <<"]"
-//         //           << ", value = ["<< vl <<"]"
-//         //           << std::endl;
-//     }
-//     file.close();
-
-//  }
