@@ -3,6 +3,7 @@
 #include <vector>
 #include <deque>
 #include <cstdlib>
+#include <ctime>
 
 struct Pair
 {
@@ -37,6 +38,6 @@ class PmergeMe
     bool isValidNumber(const std::string& str) const;
     bool ParseNumber(const std::string& str, int &number) const;
     void printAfterVector() const;
-    void sortVector();
-    void sortDeque();
+    double sortVector();
+    double sortDeque();
 };

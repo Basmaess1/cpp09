@@ -22,13 +22,22 @@ int main(int ac, char **av)
     std::cout<< "Before: ";
     pm.printVec();
 
-    pm.sortVector();
+    double vectorTime = pm.sortVector();
+    double dequeTime = pm.sortDeque();
 
     pm.printAfterVector();
-    
-    pm.sortDeque();
+    std::cout << "Time to process a range of "
+              << ac - 1
+              << " elements with std::vector : "
+              << vectorTime
+              << " us"
+              << std::endl;
 
-    std::cout << "Deque after: ";
-    pm.printDeq();
+    std::cout << "Time to process a range of "
+              << ac - 1
+              << " elements with std::deque : "
+              << dequeTime
+              << " us"
+              << std::endl;
 
 }
